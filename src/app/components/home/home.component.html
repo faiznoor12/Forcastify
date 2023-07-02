@@ -1,0 +1,284 @@
+<div
+  class="relative h-full min-h-screen md:h-full w-screen flex flex-col bg-[#0b131e] font-teko overflow-hdden bg-cover pb-8"
+  style="background: url(../a//ssets/pexels-luca-dross-9402404.jpg)"
+>
+  <div class="relative px-4 my-4 sm:my-6 sm:px-8">
+    <input
+      type="text"
+      class="relative bg-[#202b3b] w-full h-12 p-4 text-white outline-none px-8 rounded-lg font-teko text-xl font-medium tracking-widest"
+      placeholder="Search cities"
+      [(ngModel)]="input"
+      (ngModelChange)="this.debounce.next($event)"
+    />
+
+    <button
+      class="absolute flex items-center justify-center gap-2 sm:px-6 px-2 bg-[#0b131e] py-[2px] rounded-lg right-10 top-1"
+      (click)="currentLocation()"
+    >
+      <p class="text-[#cccccc] text-2xl translate-y-[2px] hidden sm:flex">
+        FIND CURRENT LOCATION
+      </p>
+      <span class="material-symbols-outlined text-[#cccccc] text-3xl">
+        location_on
+      </span>
+    </button>
+    <div
+      *ngIf="search"
+      class="absolute bg-[#202b3b] w-[calc(100%-4rem)] top-11 p-2"
+    >
+      <div class="" *ngFor="let item of location.data">
+        <p
+          class="text-[#acacac] tracking-wider text-2xl px-6"
+          (click)="weatherfun(item)"
+        >
+          {{ item.name }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-col h-full lg:flex-row">
+    <div
+      class="flex flex-col h-full lg:w-2/3 md:gap-8 md:w-full justify-evenly"
+    >
+      <div
+        class="flex items-center justify-between p-4 mx-8 sm:mx-16 md:mx-24 sm:h-48 md:h-64"
+        *ngIf="current"
+      >
+        <div class="flex flex-col justify-between h-full sm:p-8">
+          <div class="flex flex-col md:gap-2">
+            <p
+              class="text-[#ffffff] md:text-6xl sm:text-4xl font-teko font-semibold tracking-wider text-2xl"
+            >
+              {{ current.name }}
+            </p>
+            <p
+              *ngIf="current"
+              class="text-[#acacac] tracking-wider sm:text-xl md:text-2xl"
+            >
+              Today {{ date | date : "EEE MMM dd" }}
+            </p>
+          </div>
+          <p
+            *ngIf="current"
+            class="text-white text-4xl sm:text-5xl md:text-[6rem] sm:p-0"
+          >
+            {{ current.main.temp }} °C
+          </p>
+        </div>
+        <div class="h-full">
+          <img
+            *ngIf="current.weather[0].icon"
+            class="h-24 sm:h-full"
+            src="../../../assets/{{ current.weather[0].icon }}.png"
+            alt=""
+          />
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4 sm:gap-6">
+        <div
+          *ngIf="current"
+          class="mx-4 sm:mx-8 sm:h-48 md:h-64 rounded-2xl bg-[#202b3b] flex flex-col justify-evenly"
+        >
+          <p
+            class="text-[#acacac] tracking-wider sm:text-xl sm:px-4 md:text-2xl md:px-8 px-6 py-2"
+          >
+            TODAY'S FORECAST
+          </p>
+          <div
+            class="flex items-center justify-center gap-2 sm:gap-4 md:gap-6 lg:gap-8"
+          >
+            <div
+              *ngFor="let item of todaysForcast"
+              class="flex flex-col items-center justify-center lg:h-44 lg:w-fit md:w-fit bgblue-500"
+            >
+              <p
+                class="text-[#b9b9b9] sm:text-xl lg:text-3xl md:text-2xl text-sm"
+              >
+                {{ item?.dt_txt | date : "hh:mm a" }}
+              </p>
+              <img
+                *ngIf="current.weather[0].icon"
+                src="../../../assets/{{ item.weather[0].icon }}.png"
+                class="h-12 md:h-20 sm:h-16 lg:min-h-[1rem]"
+                alt=""
+              />
+              <p
+                class="text-[white] sm:text-2xl lg:text-5xl md:text-3xl text-lg "
+              >
+                {{ item.main.temp }}°C
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          *ngIf="current"
+          class="mx-4 sm:mx-8 sm:h-52 md:h-64 rounded-2xl bg-[#202b3b] flex flex-col justify-evenly"
+        >
+          <p
+            class="text-[#acacac] tracking-wider sm:text-xl sm:px-4 md:text-2xl md:px-8 px-6 py-2"
+          >
+            AIR CONDITIONS
+          </p>
+          <div class="grid w-full grid-cols-2 gap-3 px-16 place-content-center">
+            <div class="sm:h-fit md:h-[88px] w-full">
+              <div class="flex gap-2">
+                <p>
+                  <span
+                    class="material-symbols-outlined text-[#cccccc] sm:text-3xl md:text-5xl"
+                  >
+                    device_thermostat
+                  </span>
+                </p>
+                <div class="flex flex-col sm:gap-1 md:gap-2">
+                  <p class="text-[#acacac] sm:text-2xl md:text-3xl">
+                    Real Feel
+                  </p>
+                  <p class="text-[#d8d8d8] sm:text-3xl md:text-5xl">
+                    {{ current.main.feels_like }} °C
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="sm:h-fit md:h-[88px] w-full">
+              <div class="flex gap-2">
+                <p>
+                  <span
+                    class="material-symbols-outlined text-[#cccccc] sm:text-3xl md:text-5xl"
+                  >
+                    air
+                  </span>
+                </p>
+                <div class="flex flex-col sm:gap-1 md:gap-2">
+                  <p class="text-[#acacac] sm:text-2xl md:text-3xl">Wind</p>
+                  <p class="text-[#d8d8d8] sm:text-3xl md:text-5xl">
+                    {{ current.wind.speed }} m/s
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="sm:h-fit md:h-[88px] w-full">
+              <div class="flex gap-2">
+                <p>
+                  <span
+                    class="material-symbols-outlined text-[#acacac] sm:text-3xl md:text-5xl"
+                  >
+                    filter_drama
+                  </span>
+                </p>
+                <div class="flex flex-col sm:gap-1 md:gap-2">
+                  <p class="text-[#acacac] sm:text-2xl md:text-3xl">Clouds</p>
+                  <p class="text-[#d8d8d8] sm:text-3xl md:text-5xl">
+                    {{ current.clouds.all }} %
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="sm:h-fit md:h-[88px] w-full">
+              <div class="flex gap-2">
+                <p>
+                  <span
+                    class="material-symbols-outlined text-[#acacac] sm:text-3xl md:text-5xl"
+                  >
+                    humidity_mid
+                  </span>
+                </p>
+                <div class="flex flex-col sm:gap-1 md:gap-2">
+                  <p class="text-[#acacac] sm:text-2xl md:text-3xl">Humidity</p>
+                  <p class="text-[#d8d8d8] sm:text-3xl md:text-5xl">
+                    {{ current.main.humidity }} %
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="h-full p-4 sm:p-8 lg:w-1/3 lg:pt-0 lg:pl-0 md:w-full"
+      *ngIf="weaklyForcast"
+    >
+      <div
+        class="bg-[#202b3b] h-full w-full rounded-xl flex flex-col justify-evenly py-6 gap-4"
+      >
+        <p
+          class="text-[#acacac] tracking-wider sm:text-xl md:text-2xl sm:px-4 md:px-8 px-6 py-2"
+        >
+          5-DAY FORECAST
+        </p>
+        <div
+          *ngFor="let item of weaklyForcast"
+          class="grid grid-cols-3 px-6 sm:gap-1 md:gap-3"
+        >
+          <div class="flex items-center justify-start h-10 w-fit">
+            <p
+              class="text-[#acacac] text-lg sm:text-3xl tracking-wider font-medium"
+            >
+              {{ item?.dt_txt | date : "EEEE" }}
+            </p>
+          </div>
+          <div class="flex items-center justify-start h-10 gap-2 w-fit">
+            <span
+              class="material-symbols-outlined text-[#acacac] text-xl sm:text-3xl"
+            >
+              device_thermostat
+            </span>
+            <p class="text-[#acacac] sm:text-2xl md:text-3xl">
+              {{ item.main.feels_like }} °C
+            </p>
+          </div>
+          <div class="flex items-center justify-start h-10 gap-2 w-fit">
+            <span
+              class="material-symbols-outlined text-[#acacac] text-xl sm:text-3xl"
+            >
+              air
+            </span>
+            <p class="text-[#acacac] sm:text-2xl md:text-3xl">
+              {{ item.wind.speed }} m/s
+            </p>
+          </div>
+          <div class="flex items-center justify-start h-10 gap-2 w-fit">
+            <!-- <span
+              class="material-symbols-outlined text-[#acacac] text-xl sm:text-3xl"
+            >
+              rainy
+            </span> -->
+            <img
+            *ngIf="item.weather[0].icon"
+            src="../../../assets/{{ item.weather[0].icon }}.png"
+            class="h-8 sm:h-12 "
+            alt=""
+          />
+            <p class="text-[#acacac] sm:text-2xl md:text-3xl">
+              {{ item.weather[0].description }}
+            </p>
+          </div>
+          <div class="flex items-center justify-start h-10 gap-2 w-fit">
+            <span
+              class="material-symbols-outlined text-[#acacac] text-xl sm:text-3xl"
+            >
+              filter_drama
+            </span>
+            <p class="text-[#acacac] sm:text-2xl md:text-3xl">
+              {{ item.clouds.all }} %
+            </p>
+          </div>
+          <div class="flex items-center justify-start h-10 gap-2 w-fit">
+            <span
+              class="material-symbols-outlined text-[#acacac] text-xl sm:text-3xl"
+            >
+              humidity_mid
+            </span>
+            <p class="text-[#acacac] sm:text-2xl md:text-3xl">
+              {{ item.main.humidity }} %
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
